@@ -1,9 +1,9 @@
-
+import Login from "./components/account/Login";
 
 function App() {
   return (
-    <div >
-      Hello
+    <div style={{marginTop : '70px'}}>
+      <Login />
     </div>
   );
 }
