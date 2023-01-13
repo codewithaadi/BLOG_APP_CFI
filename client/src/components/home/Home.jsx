@@ -1,7 +1,22 @@
-import React from 'react'
+import { Grid } from '@mui/material';
+import React from 'react';
+
+//components
+import Banner from '../banner/Banner';
+import Categories from './Categories';
 
 export default function Home() {
   return (
-    <div>Hello from home</div>
+    <>
+      <Banner />
+      <Grid container>
+        <Grid item lg={2} sm={2} xs={12}>
+          <Categories />
+        </Grid>
+        <Grid container item xs={12}  sm={10} lg={10}>
+          Posts
+        </Grid>
+      </Grid>
+    </>
   )
 }
