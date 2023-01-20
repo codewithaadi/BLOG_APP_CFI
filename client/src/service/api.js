@@ -1,31 +1,33 @@
 import axios from 'axios';
-import { API_NOTIFICATION_MESSAGES, SERVICE_URLS} from '../constants/config';
+import { API_NOTIFICATION_MESSAGES, SERVICE_URLS } from '../constants/config';
+import { getAccessToken } from '../utils/common-utils';
 
 const API_URL = 'http://localhost:8000';
 
 const axiosInstance = axios.create({
     baseURL: API_URL,
     timeout: 10000,
-    headers:{
-        "content-type" : "application/json"
+    headers: {
+        "Accept": "application/json, form-data", 
+        // "Content-Type": "application/json"
     }
 });
 
 axiosInstance.interceptors.request.use(
-    function(config){
+    function (config) {
         return config;
     },
-    function(error){
+    function (error) {
         return Promise.reject(error);
     }
 )
 
 axiosInstance.interceptors.response.use(
-    function(response){ 
+    function (response) {
         // Stop global loader here  Project Mein Loader ni hai
         return processResponse(response);
     },
-    function(error){
+    function (error) {
         // Stop global loader here
         return Promise.reject(processError(error));
     },
@@ -36,15 +38,15 @@ axiosInstance.interceptors.response.use(
 // If Fail - > return {isFailure : truem status: string, msg: string, code:int} //
 //////////////////////////////////////////////////////////////////////////////////
 
-const processResponse = (response) =>{
-    if(response?.status===200){
-        return { isSuccess : true, data: response.data}
+const processResponse = (response) => {
+    if (response?.status === 200) {
+        return { isSuccess: true, data: response.data }
     }
-    else{
+    else {
         return {
-            isFailure : true,
+            isFailure: true,
             status: response?.status,
-            msg : response?.msg,
+            msg: response?.msg,
             code: response?.code
         }
     }
@@ -55,29 +57,29 @@ const processResponse = (response) =>{
 // If Fail - > return {isFailure : truem status: string, msg: string, code:int} //
 //////////////////////////////////////////////////////////////////////////////////
 
-const processError = async (error)=>{
-    if(error.response){
+const processError = async (error) => {
+    if (error.response) {
         //Request made and server responded with a status other
         //That falls out of the range of 2.x.x
-        console.log('ERROR IN RESPONSE: ',error.toJSON());
-        return{
-            isError:true,
+        console.log('ERROR IN RESPONSE: ', error.toJSON());
+        return {
+            isError: true,
             msg: API_NOTIFICATION_MESSAGES.responseFailure,
             code: error.response.status
         }
-    }else if(error.request){
+    } else if (error.request) {
         //Request made but no response was recieved
-        console.log('ERROR IN REQUEST: ',error.toJSON());
-        return{
-            isError:true,
+        console.log('ERROR IN REQUEST: ', error.toJSON());
+        return {
+            isError: true,
             msg: API_NOTIFICATION_MESSAGES.requestFailure,
             code: ""   //There is no req delievered to backend due to failure   //Empty
         }
-    }else{
+    } else {
         //Something happened in setting up request that triggers an error
-        console.log('ERROR IN NETWORK: ',error.toJSON());
-        return{
-            isError:true,
+        console.log('ERROR IN NETWORK: ', error.toJSON());
+        return {
+            isError: true,
             msg: API_NOTIFICATION_MESSAGES.networkError,
             code: ""   //There is no req delievered to backend due to failure    //Empty
         }
@@ -86,26 +88,29 @@ const processError = async (error)=>{
 
 const API = {};
 
-for(const [key,value] of Object.entries(SERVICE_URLS)){
-    API[key] = (body,showUploadProgress, showDownloadProgress) => 
+for (const [key, value] of Object.entries(SERVICE_URLS)) {
+    API[key] = (body, showUploadProgress, showDownloadProgress) =>
         axiosInstance({
             method: value.method,
             url: value.url,
             data: body,
             responseType: value.responseType,
-            onUploadProgress: function (progressEvent){
-                if(showUploadProgress){
-                    let percentageCompleted = Math.round((progressEvent.loaded*100)/ progressEvent.total)
+            headers: {
+                authorization : getAccessToken()
+            },
+            onUploadProgress: function (progressEvent) {
+                if (showUploadProgress) {
+                    let percentageCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total)
                     showUploadProgress(percentageCompleted);
                 }
             },
-            onDownloadProgress: function (progressEvent){
-                if(showDownloadProgress){
-                    let percentageCompleted = Math.round((progressEvent.loaded*100)/ progressEvent.total)
+            onDownloadProgress: function (progressEvent) {
+                if (showDownloadProgress) {
+                    let percentageCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total)
                     showDownloadProgress(percentageCompleted);
                 }
             }
         })
 }
 
-export {API};
+export { API };
