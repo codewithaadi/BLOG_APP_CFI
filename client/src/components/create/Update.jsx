@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from 'react';
-import { useLocation,useNavigate } from 'react-router-dom';
+import { useLocation,useNavigate,useParams } from 'react-router-dom';
 
 //Material UI
 import { Box, FormControl, styled, InputBase, Button, TextareaAutosize } from '@mui/material';
@@ -54,15 +54,26 @@ const initialPost = {
     createdDate: new Date()
 }
 
-export default function CreatePost() {
+export default function UpdatePost() {
 
     const [post, setPost] = useState(initialPost);
     const [file, setFile] = useState(''); //Using State for Image
     const location = useLocation(); //Initializing React-router-tool to fetch category from the url
     const navigate = useNavigate(); //Initializing React-router-tool to redirect to another page
     const { account } = useContext(DataContext);
+    const {id} = useParams();
 
     const url = post.picture ? post.picture : 'https://images.unsplash.com/photo-1543128639-4cb7e6eeef1b?ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8bGFwdG9wJTIwc2V0dXB8ZW58MHx8MHx8&ixlib=rb-1.2.1&w=1000&q=80';
+
+    useEffect(()=>{
+        const fetchData = async ()=>{
+          let response = await API.getPostById(id);
+          if(response.isSuccess){
+            setPost(response.data);
+          }
+        }
+        fetchData();
+      },[]);
 
     useEffect(() => {
         const getImage = async () => {
@@ -86,10 +97,10 @@ export default function CreatePost() {
         setPost({ ...post, [e.target.name]: e.target.value })
     }   
 
-    const savePost = async ()=>{
-        let response = await API.createPost(post);
+    const updateBlogPost = async ()=>{
+        let response = await API.updatePost(post);
         if(response.isSuccess){
-            navigate('/');
+            navigate(`/details/${id}`);
         }
     }
 
@@ -101,10 +112,10 @@ export default function CreatePost() {
                     <AddCircleIcon fontSize='large' color='action' />
                 </label>
                 <input type="file" id="fileInput" style={{ display: 'none' }} onChange={(e) => setFile(e.target.files[0])} />
-                <InputTextField placeholder='Title' onChange={(e) => handleChange(e)} name='title' />
-                <Button variant='contained' onClick={()=> savePost()}>Publish</Button>
+                <InputTextField placeholder='Title' value={post.title} onChange={(e) => handleChange(e)} name='title' />
+                <Button variant='contained' onClick={()=> updateBlogPost()}>Update</Button>
             </StyledFormControl>
-            <Textarea minRows={5} placeholder='Tell Your Story....' onChange={(e) => handleChange(e)} name='description' />
+            <Textarea minRows={5} placeholder='Tell Your Story....' value={post.description} onChange={(e) => handleChange(e)} name='description' />
 
         </Container>
     )
