@@ -25,11 +25,14 @@ export const API_NOTIFICATION_MESSAGES = {
 
 //API SERVICE CALL
 //SAMPLE REQUEST
-//NEED SERVICE CALL : {url: '/', method: 'POST/GET/DELETE/PUT' , praram: 'true/false', query : 'true/false'}
+//NEED SERVICE CALL : {url: '/', method: 'POST/GET/DELETE/PUT' , prarams: 'true/false', query : 'true/false'}
 
 export const SERVICE_URLS = {
     userSignup: {url: '/signup', method: 'POST'},
     userLogin : {url: '/login', method:'POST'},
     uploadFile: {url: '/file/upload',method: 'POST'},
-    createPost : {url: '/create', method: 'POST'}
+    createPost : {url: '/create', method: 'POST'},
+    getAllPosts : {url: '/posts', method: 'GET', params: true},
+    getPostById : {url: 'post', method: 'GET',query: true}
+
 }

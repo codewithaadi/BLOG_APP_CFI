@@ -4,6 +4,7 @@ import React from 'react';
 //components
 import Banner from '../banner/Banner';
 import Categories from './Categories';
+import Posts from './post/Posts';
 
 export default function Home() {
   return (
@@ -14,7 +15,7 @@ export default function Home() {
           <Categories />
         </Grid>
         <Grid container item xs={12}  sm={10} lg={10}>
-          Posts
+          <Posts/>
         </Grid>
       </Grid>
     </>
